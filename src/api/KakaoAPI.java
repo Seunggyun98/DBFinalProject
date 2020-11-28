@@ -90,6 +90,7 @@ public class KakaoAPI {
                 locationX = Double.valueOf((String) store.get("x"));
                 locationY = Double.valueOf((String) store.get("y"));
                 Statement statement = Database.connect().createStatement();
+                statement.executeUpdate("delete from Store *;");
                 statement.executeUpdate("Insert Into Store values('"+storeID+"','"+brandName+"','"+storeName+"','"+storeAddress+"','"+placeURL+"','"+locationX+"','"+locationY+"');");
                 //System.out.printf(storeID);
                 System.out.printf(storeName);

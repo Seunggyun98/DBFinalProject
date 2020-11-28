@@ -20,16 +20,22 @@ public class Paser {
 		
 		//type1 = 1+1상품
 		type1_parser type1 = new type1_parser();
-		ArrayList<String> t1_name = new ArrayList<String>();
-		ArrayList<String> t1_price = new ArrayList<String>();
-		ArrayList<String> t1_brand = new ArrayList<String>();
-		ArrayList<String> t1_event = new ArrayList<String>();
-		ArrayList<Item> t1_item = new ArrayList<Item>();
-		
+		ArrayList<String> t1_name = new ArrayList<>();
+		ArrayList<String> t1_price_string = new ArrayList<>();
+		ArrayList<Integer> t1_price = new ArrayList<>();
+		ArrayList<String> t1_brand = new ArrayList<>();
+		ArrayList<String> t1_event = new ArrayList<>();
+		ArrayList<Item> t1_item = new ArrayList<>();
 		t1_name = type1.get_name();
-		t1_price = type1.get_price();
+		t1_price_string = type1.get_price();
 		t1_brand = type1.get_brand();
 		t1_event = type1.get_event();
+		
+		
+		for(int i = 0;i<t1_price_string.size();i++) {
+			String[] temp = t1_price_string.get(i).split("원");
+			t1_price.add(Integer.valueOf(temp[0]));
+		}
 		
 		int size = t1_price.size();
 		for(int i=0;i<size;i++) {
@@ -156,7 +162,15 @@ class type1_parser{
 			
 			Elements names = next.select(".fa.fa-coins.text-warning.pr-1");
 			for(Element e : names) {
-				this.name.add((idx++),e.previousElementSiblings().text().toString());
+				String tmp = e.previousElementSiblings().text().toString();
+				StringBuilder tmp2 = new StringBuilder();
+			
+				for(int i=0;i<tmp.length();i++) {
+					if(',' != tmp.charAt(i)&&' '!=tmp.charAt(i)) {
+						tmp2.append(tmp.charAt(i));
+					}
+				}
+				this.name.add((idx++),tmp2.toString());
 			}
 			url=getURL.next_page();
 		}
@@ -164,11 +178,18 @@ class type1_parser{
 		Document next=Jsoup.connect(url).get();
 		Elements names = next.select(".fa.fa-coins.text-warning.pr-1");
 		for(Element e : names) {
-			this.name.add(idx++,e.previousElementSiblings().text().toString());
-			
-			}
+			String tmp = e.previousElementSiblings().text().toString();
+			StringBuilder tmp2 = new StringBuilder();
 		
-			return this.name;
+			for(int i=0;i<tmp.length();i++) {
+				if(',' != tmp.charAt(i)&&' '!=tmp.charAt(i)) {
+					tmp2.append(tmp.charAt(i));
+				}
+			}
+			this.name.add((idx++),tmp2.toString());
+		}
+		
+		return this.name;
 	}
 	
 	//브랜드명을 파싱함

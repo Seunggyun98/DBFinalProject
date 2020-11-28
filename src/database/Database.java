@@ -34,20 +34,19 @@ public class Database {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(urldb, user, pw);
-            System.out.println("Connected to the PostgreSQL server successfully.");
+            //System.out.println("Connected to the PostgreSQL server successfully.");
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Failed to connect to the PostgreSQL Server.");
         }
         return conn;
     }
 
     public void createTable(Connection conn) throws SQLException {
         Statement statement = conn.createStatement();
-        statement.executeUpdate("drop table if exists Client;");
-        statement.executeUpdate("drop table if exists Store;");
-        statement.executeUpdate("drop table if exists Product;");
-        statement.executeUpdate("drop table if exists Applied;");
+  
+        statement.execute("DROP TABLE IF EXISTS Client, Stroe, Applied, Product CASCADE;");
+        
         statement.executeUpdate("create table if not exists Client(userID varchar(20),pName varchar(20),locX double precision,locY double precision,primary key(userID));");
         statement.executeUpdate("create table if not exists Store(storeID varchar(20), bName varchar(20), sName varchar(20), sAddress varchar(40), pURL varchar(40), locX double precision,locY double precision, primary key(storeID));");
         statement.executeUpdate("create table if not exists Product(pID varchar(40), bName varchar(40), pName varchar(40), price varchar(40), eName varchar(40), primary key(pID));");
@@ -59,6 +58,7 @@ public class Database {
         BufferedReader br = new BufferedReader(new FileReader(csv));
         String line = "";
         int row =0 ,i;
+        br.readLine();
         while ((line = br.readLine()) != null){
             String[] splited = line.split(",", -1);
             for(int j = 0; j<splited.length;j++)
@@ -78,7 +78,7 @@ public class Database {
                     }
                 }
             }
-            list.add(new Item(splited[0],splited[1],splited[2],splited[3]));
+            list.add(new Item(splited[0],Integer.valueOf(splited[1]),splited[2],splited[3]));
         }
         System.out.println("Database load complete!!");
     }

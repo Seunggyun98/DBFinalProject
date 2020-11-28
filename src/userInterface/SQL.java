@@ -6,21 +6,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.postgresql.util.PSQLException;
+
 import database.Location;
 import parser.Item;
 
 public class SQL {
 	public static ArrayList<Item> query(Statement statement, String sql) throws SQLException {
 		ArrayList<Item> list = new ArrayList<>();
-		
+		try {
         ResultSet resultSet = statement.executeQuery(sql);
+		
         ResultSetMetaData rsmd = resultSet.getMetaData();
         int columnsNumber = rsmd.getColumnCount();
         resultSet.next();
         while (resultSet.next()) {
         	String pName="";
         	String bName="";
-        	String price="";
+        	int price=0;
         	String eName="";
             for (int i = 1; i <= columnsNumber; i++) {
             	switch(i) {
@@ -35,7 +38,7 @@ public class SQL {
             		//price = resultSet.getString(i);
             		break;
             	case 4:
-            		price = resultSet.getString(i);
+            		price = resultSet.getInt(i);
             		//eName = resultSet.getString(i);
             		break;
             	case 5:
@@ -46,6 +49,9 @@ public class SQL {
             Item temp = new Item(pName,price,bName,eName);
             list.add(temp);
         }
+        }catch(PSQLException e) {
+			System.out.println("검색 결과가 없습니다.");
+		}
         return list;
     }
 	public static ArrayList<Location> locationQuery(Statement statement, String sql) throws SQLException {
@@ -99,4 +105,23 @@ public class SQL {
         }
         return location;
     }	
+
+	public static ArrayList<Item> SortByPrice(Statement statement,ArrayList<Item> list) throws SQLException{
+		ArrayList<Item> sorted = new ArrayList<>();
+		
+		sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price asc");
+		
+		return sorted;
+		
+	}
+	public static ArrayList<Item> SortByPriceDesc(Statement statement,ArrayList<Item> list) throws SQLException{
+		ArrayList<Item> sorted = new ArrayList<>();
+		
+		sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price desc");
+		
+		return sorted;
+		
+	}
+		
+	
 }

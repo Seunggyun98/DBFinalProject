@@ -11,9 +11,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import parser.Item;
+import parser.Paser;
 import api.KakaoAPI;
 import database.Database;
-
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class Menu{
     
@@ -21,6 +24,14 @@ public class Menu{
 	static Scanner in = new Scanner(System.in);
 	static ArrayList<Item> list = new ArrayList<>();
 	public static void main(String[] args) throws Exception {
+		//매달 1일과 15일에 db업데이트
+		SimpleDateFormat format = new SimpleDateFormat("dd");
+		Calendar time = Calendar.getInstance();
+		int currentDay =Integer.valueOf(format.format(time.getTime()));
+		if(currentDay==1||currentDay==15) {
+			Paser.main(args);
+		}
+		
 		loadFromCSV();
 		Database database = new Database();
 		System.out.println("편의점 행사상품 검색 프로그램입니다.");
@@ -71,7 +82,7 @@ public class Menu{
 			String temp = sc.nextLine();
 			String[] splited = temp.split(",");
 			
-			list.add(new Item(splited[0],splited[1],splited[2],splited[3]));
+			list.add(new Item(splited[0],Integer.valueOf(splited[1]),splited[2],splited[3]));
 		}
 		System.out.println("Database load complete!!");
 		sc.close();
@@ -126,80 +137,80 @@ public class Menu{
 	
 	private static void showList(ArrayList<Item> list) throws FileNotFoundException, SQLException {
 		//20개씩 보여주기, 1~maxPage까지 선택으로 리스트 갱신, 0입력시 메뉴로
-		try {
-			Statement statement = Database.connect().createStatement();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.out.println("총 상품 개수 :"+list.size());
-		System.out.println("검색 필터를 설정해주세요.");
-		System.out.println("1. 기본 정렬\t2. 가격 오름차순\t3. 가격 내림차순\t4. 주변 편의점");
-		/*  
-		 * KakaoAPI.find(radius); 주변 편의점 테이블 저장. 
-		 * list = SQL.query(주변 편의점 테이블 natural join ItemView 테이블);
-		 *
-		 */
-		int filter=in.nextInt();
-		switch(filter) {
-		case 1:
-			break;
-		case 2:
-			
-			break;
-		case 3:
-			
-			break;
-		case 4:
-			System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
-			int radius = in.nextInt();
-			System.out.println(radius+"m 내의 편의점 목록을 보여줍니다.");
-			KakaoAPI.find(radius);
-			System.out.println("해당 편의점에서 판매하는 상품 목록입니다.");
-			//list = SQL.query(statement, "Select pID, bName, pName, price, eName From  ");
-			break;
-		}
-		
-		System.out.println("--------------상품 목록--------------");
-		int idx=0;
-		int next=-1;
-		for(;;) {
-			if(next==-1) {
-				System.out.println((next+2)+" 페이지/"+((list.size()/20)+1)+"페이지");
-			}else {
-				System.out.println((next)+" 페이지/"+((list.size()/20)+1)+"페이지");
+	
+		Statement statement = Database.connect().createStatement();
+		if(list.size()!=0) {
+			System.out.println("총 상품 개수 :"+list.size());
+			System.out.println("검색 필터를 설정해주세요.");
+			System.out.println("1. 기본 정렬\t2. 가격 오름차순\t3. 가격 내림차순\t4. 주변 편의점");
+			/*  
+			 * KakaoAPI.find(radius); 주변 편의점 테이블 저장. 
+			 * list = SQL.query(주변 편의점 테이블 natural join ItemView 테이블);
+			 *
+			 */
+			int filter=in.nextInt();
+			switch(filter) {
+			case 1:
+				break;
+			case 2:
+				list = SQL.SortByPrice(statement, list);
+				break;
+			case 3:
+				list = SQL.SortByPriceDesc(statement, list);
+				break;
+			case 4:
+				System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
+				int radius = in.nextInt();
+				System.out.println(radius+"m 내의 편의점 목록을 보여줍니다.");
+				KakaoAPI.find(radius);
+				System.out.println("해당 편의점에서 판매하는 상품 목록입니다.");
+				//list = SQL.query(statement, "Select pID, bName, pName, price, eName From  ");
+				break;
 			}
-			System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n","편의점","상품명","가격","행사");
 			
-			for(int i=idx;i<idx+20;i++) {
+			System.out.println("--------------상품 목록--------------");
+			int idx=0;
+			int next=-1;
+			for(;;) {
+				if(next==-1) {
+					System.out.println((next+2)+" 페이지/"+((list.size()/20)+1)+"페이지");
+				}else {
+					System.out.println((next)+" 페이지/"+((list.size()/20)+1)+"페이지");
+				}
+				System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n","편의점","상품명","가격","행사");
+				
+				for(int i=idx;i<idx+20;i++) {
+					try {
+						System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n"
+								,list.get(i).getBrand(),list.get(i).getName(),list.get(i).getPrice(),list.get(i).getEvent());
+					}catch(IndexOutOfBoundsException e) {
+						break;
+					}
+				}
+				
+				System.out.println("(메뉴 : 0) \t원하는 페이지 : ");
 				try {
-					System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n"
-							,list.get(i).getBrand(),list.get(i).getName(),list.get(i).getPrice(),list.get(i).getEvent());
-				}catch(IndexOutOfBoundsException e) {
-					break;
-				}
-			}
-			System.out.println("(메뉴 : 0) \t원하는 페이지 : ");
-			try {
-				next = in.nextInt();
-				if(next == 0 ) {
+					next = in.nextInt();
+					if(next == 0 ) {
+						System.out.println("메뉴화면으로 돌아갑니다.");
+						menu();
+					}else if(next > ((list.size()/20)+1)) {
+						System.out.println("없는 페이지 입니다. 첫 페이지로 돌아갑니다.");
+						showList(list);
+					}
+					else {
+						idx=(next-1)*20;
+						continue;
+					}
+				}catch(InputMismatchException e) {
 					System.out.println("메뉴화면으로 돌아갑니다.");
+					in = new Scanner(System.in);
 					menu();
-				}else if(next > ((list.size()/20)+1)) {
-					System.out.println("없는 페이지 입니다. 첫 페이지로 돌아갑니다.");
-					showList(list);
 				}
-				else {
-					idx=(next-1)*20;
-					continue;
-				}
-			}catch(InputMismatchException e) {
-				System.out.println("메뉴화면으로 돌아갑니다.");
-				in = new Scanner(System.in);
-				menu();
 			}
-			
 		}
+		System.out.println("메뉴화면으로 돌아갑니다.");
+		menu();
 	}
 	
 	private static void searchItemMenu() throws SQLException {
