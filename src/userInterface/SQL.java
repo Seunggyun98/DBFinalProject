@@ -28,18 +28,15 @@ public class SQL {
             for (int i = 1; i <= columnsNumber; i++) {
             	switch(i) {
             	case 1:
-            		//eName = resultSet.getString(i);
             		break;
             	case 2:
             		bName = resultSet.getString(i);
             		break;
             	case 3:
             		pName = resultSet.getString(i);
-            		//price = resultSet.getString(i);
             		break;
             	case 4:
             		price = resultSet.getInt(i);
-            		//eName = resultSet.getString(i);
             		break;
             	case 5:
             		eName = resultSet.getString(i);
@@ -106,21 +103,24 @@ public class SQL {
         return location;
     }	
 
-	public static ArrayList<Item> SortByPrice(Statement statement,ArrayList<Item> list) throws SQLException{
+	public static ArrayList<Item> SortByPrice(Statement statement,String ItemName, String brand) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		
-		sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price asc");
+		if(brand.equals("all")) {
+			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price;");
+		}else {
+			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price;");
+		}
 		
 		return sorted;
-		
 	}
-	public static ArrayList<Item> SortByPriceDesc(Statement statement,ArrayList<Item> list) throws SQLException{
+	public static ArrayList<Item> SortByPriceDesc(Statement statement,String ItemName, String brand) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		
-		sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price desc");
-		
+		if(brand.equals("all")) {
+			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price desc;");
+		}else {
+			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price desc;");
+		}
 		return sorted;
-		
 	}
 		
 	

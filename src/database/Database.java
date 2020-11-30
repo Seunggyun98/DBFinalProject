@@ -47,10 +47,10 @@ public class Database {
   
         statement.execute("DROP TABLE IF EXISTS Client, Stroe, Applied, Product CASCADE;");
         
-        statement.executeUpdate("create table if not exists Client(userID varchar(20),pName varchar(20),locX double precision,locY double precision,primary key(userID));");
-        statement.executeUpdate("create table if not exists Store(storeID varchar(20), bName varchar(20), sName varchar(20), sAddress varchar(40), pURL varchar(40), locX double precision,locY double precision, primary key(storeID));");
-        statement.executeUpdate("create table if not exists Product(pID varchar(40), bName varchar(40), pName varchar(40), price varchar(40), eName varchar(40), primary key(pID));");
-        statement.executeUpdate("create table if not exists Applied(userID varchar(20), storeID varchar(20), distance double precision, primary key(userID,storeID));");
+        statement.executeUpdate("create table if not exists Client(userID int,pName varchar(20),locX double precision,locY double precision,primary key(userID));");
+        statement.executeUpdate("create table if not exists Store(storeID int, bName varchar(20), sName varchar(20), sAddress varchar(40), pURL varchar(40), locX double precision,locY double precision, primary key(storeID));");
+        statement.executeUpdate("create table if not exists Product(pID int, bName varchar(40), pName varchar(40), price int, eName varchar(40), primary key(pID));");
+        statement.executeUpdate("create table if not exists Applied(userID int, storeID int, distance double precision, primary key(userID,storeID));");
     }
     private void loadFromCSV(ArrayList<Item> list) throws IOException {
 

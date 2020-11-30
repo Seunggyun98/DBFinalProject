@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import database.Database;
+import parser.Item;
 import userInterface.SQL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -100,6 +103,7 @@ public class KakaoAPI {
                 System.out.printf("("+distance+"m)");
                 //System.out.printf("X:"+locationX + " Y:" + locationY);
                 System.out.println();
+                
             }
         }
     }
@@ -115,6 +119,7 @@ public class KakaoAPI {
                 tempList.add(brandName);
             }
         }
+   
         HashSet hs=new HashSet(tempList);
         ArrayList<String> storeList=new ArrayList<>(hs);
         for(int i=0; i<storeList.size(); i++){

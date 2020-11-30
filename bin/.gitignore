@@ -1,4 +1,3 @@
-/api/
-/database/
-/parser/
 /userInterface/
+/database/
+/api/

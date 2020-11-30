@@ -102,11 +102,11 @@ public class Menu{
 			}else {
 				System.out.println((next)+" 페이지/"+((list.size()/20)+1)+"페이지");
 			}
-			System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n","편의점","상품명","가격","행사");
+			System.out.printf("\t%-15s\t\t%15s\t\t\t\t%s\t\t       %s\n","편의점","상품명","가격","행사");
 			
 			for(int i=idx;i<idx+20;i++) {
 				try {
-					System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n"
+					System.out.printf("\t%-15s\t\t%-40s\t    %-20s%s\n"
 							,list.get(i).getBrand(),list.get(i).getName(),list.get(i).getPrice(),list.get(i).getEvent());
 				}catch(IndexOutOfBoundsException e) {
 					break;
@@ -140,33 +140,9 @@ public class Menu{
 	
 		Statement statement = Database.connect().createStatement();
 		if(list.size()!=0) {
+			in = new Scanner(System.in);
 			System.out.println("총 상품 개수 :"+list.size());
-			System.out.println("검색 필터를 설정해주세요.");
-			System.out.println("1. 기본 정렬\t2. 가격 오름차순\t3. 가격 내림차순\t4. 주변 편의점");
-			/*  
-			 * KakaoAPI.find(radius); 주변 편의점 테이블 저장. 
-			 * list = SQL.query(주변 편의점 테이블 natural join ItemView 테이블);
-			 *
-			 */
-			int filter=in.nextInt();
-			switch(filter) {
-			case 1:
-				break;
-			case 2:
-				list = SQL.SortByPrice(statement, list);
-				break;
-			case 3:
-				list = SQL.SortByPriceDesc(statement, list);
-				break;
-			case 4:
-				System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
-				int radius = in.nextInt();
-				System.out.println(radius+"m 내의 편의점 목록을 보여줍니다.");
-				KakaoAPI.find(radius);
-				System.out.println("해당 편의점에서 판매하는 상품 목록입니다.");
-				//list = SQL.query(statement, "Select pID, bName, pName, price, eName From  ");
-				break;
-			}
+			
 			
 			System.out.println("--------------상품 목록--------------");
 			int idx=0;
@@ -177,11 +153,11 @@ public class Menu{
 				}else {
 					System.out.println((next)+" 페이지/"+((list.size()/20)+1)+"페이지");
 				}
-				System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n","편의점","상품명","가격","행사");
+				System.out.printf("\t%-15s\t\t%15s\t\t\t\t%s\t\t       %s\n","편의점","상품명","가격","행사");
 				
 				for(int i=idx;i<idx+20;i++) {
 					try {
-						System.out.printf("%-20s\t%-25s\t%-8s\t%-4s\n"
+						System.out.printf("\t%-15s\t\t%-40s\t    %-20s%s\n"
 								,list.get(i).getBrand(),list.get(i).getName(),list.get(i).getPrice(),list.get(i).getEvent());
 					}catch(IndexOutOfBoundsException e) {
 						break;
@@ -254,7 +230,8 @@ class Tool extends ToolClass{
 	public ArrayList<Item> searchName(ArrayList<Item> list){
 		ArrayList<Item> found = new ArrayList<>();
 		String ItemName="";
-	
+	try {
+			Statement statement = Database.connect().createStatement();
 		 do{ 
 			System.out.println("찾고싶은 상품명을 입력해주세요 : ");
 			ItemName =  in.next();
@@ -264,18 +241,48 @@ class Tool extends ToolClass{
 			}
 		}while(ItemName.length()<2);
 		 String brand= searchBrand();
+		 
+		 System.out.println("검색 필터를 설정해주세요.");
+			System.out.println("1. 기본 정렬\t2. 가격 오름차순\t3. 가격 내림차순\t4. 주변 편의점");
+			/*  
+			 * KakaoAPI.find(radius); 주변 편의점 테이블 저장. 
+			 * list = SQL.query(주변 편의점 테이블 natural join ItemView 테이블);
+			 *
+			 */
+			
+			int filter=in.nextInt();
+			switch(filter) {
+			case 1:
+				break;
+			case 2:
+				list = SQL.SortByPrice(statement, ItemName, brand);
+				return list;
+	
+			case 3:
+				list = SQL.SortByPriceDesc(statement, ItemName, brand);
+				return list;
+			case 4:
+				System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
+				int radius = in.nextInt();
+				System.out.println(radius+"m 내의 편의점 목록을 보여줍니다.");
+				KakaoAPI.find(radius);
+				System.out.println("해당 편의점에서 판매하는 상품 목록입니다.");
+				//list = SQL.query(statement, "Select pID, bName, pName, price, eName From  ");
+				break;
+			}
+		 
+		 
+		 
 		//sql문으로 검색 후 found에 저장
 		
-		try {
-			Statement statement = Database.connect().createStatement();
-			if(brand!="all") {
+		
+			if(brand != "all") {
 				found = SQL.query(statement,
-						"Create View ItemView as Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%');");
+						"Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%');");
 				
 			}else {
-				found = SQL.query(statement,
-						"Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%');");
-				
+				found =SQL.query(statement,
+						"Create view ItemView as Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%');");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
