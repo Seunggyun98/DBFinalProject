@@ -71,6 +71,7 @@ public class Menu{
 			menu();
 		}
 	}
+	
 	private static void loadFromCSV() throws IOException {
 
 		File csv = new File("Type_All.csv");
