@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
 
 import api.KakaoAPI;
 import parser.Item;
+import userInterface.Menu;
+import userInterface.SQL;
 
 public class Database {
     File file;
@@ -24,12 +26,14 @@ public class Database {
     public Database() throws Exception {
 	       // write your code here
 	       createTable(connect());
-	       insert_product(connect());
+	       insert_product();
+	       Menu.list = loadData();
 	       //KakaoAPI kakao = new KakaoAPI();
 	       //System.out.println(kakao.addrToCoord("127.043784", "37.279509", "1000"));
 	       //Clawler clawler = new Clawler();
 	       //clawler.clawler_main();    
 	}
+    
     public static Connection connect() {
         Connection conn = null;
         try {
@@ -41,11 +45,24 @@ public class Database {
         }
         return conn;
     }
-
+    
+    
+    public ArrayList<Item> loadData() throws SQLException {
+		ArrayList<Item> list  = new ArrayList<>();
+		
+		Statement statement = connect().createStatement();
+		list = SQL.query(statement, "select * from Product;");
+    	return list;
+    }
+    
+    
     public void createTable(Connection conn) throws SQLException {
         Statement statement = conn.createStatement();
   
-        statement.execute("DROP TABLE IF EXISTS Client, Stroe, Applied, Product CASCADE;");
+        statement.executeUpdate("DROP TABLE IF EXISTS Client CASCADE;");
+        statement.executeUpdate("DROP TABLE IF EXISTS Stroe CASCADE;");
+        statement.executeUpdate("DROP TABLE IF EXISTS Applied CASCADE;");
+        statement.executeUpdate("DROP TABLE IF EXISTS Product CASCADE;");
         
         statement.executeUpdate("create table if not exists Client(userID int,pName varchar(20),locX double precision,locY double precision,primary key(userID));");
         statement.executeUpdate("create table if not exists Store(storeID int, bName varchar(20), sName varchar(20), sAddress varchar(40), pURL varchar(40), locX double precision,locY double precision, primary key(storeID));");
@@ -53,7 +70,6 @@ public class Database {
         statement.executeUpdate("create table if not exists Applied(userID int, storeID int, distance double precision, primary key(userID,storeID));");
     }
     private void loadFromCSV(ArrayList<Item> list) throws IOException {
-
         File csv = new File("Type_All.csv");
         BufferedReader br = new BufferedReader(new FileReader(csv));
         String line = "";
@@ -83,14 +99,15 @@ public class Database {
         System.out.println("Database load complete!!");
     }
     
-    public void insert_product(Connection conn) throws Exception {
+    public void insert_product() throws Exception {
         ArrayList<Item> t1_item = new ArrayList<Item>();
-        Statement statement = conn.createStatement();
+        Statement statement =  connect().createStatement();
         loadFromCSV(t1_item);
         for(int i = 1;i<t1_item.size();i++)
         {
             statement.executeUpdate("Insert into Product values("+(i)+",'"+t1_item.get(i).getBrand()+"','"+t1_item.get(i).getName()+"','"+t1_item.get(i).getPrice()+"','"+t1_item.get(i).getEvent()+"');");
         }
+
     }
    
 }

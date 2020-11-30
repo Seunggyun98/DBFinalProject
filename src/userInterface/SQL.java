@@ -44,6 +44,7 @@ public class SQL {
             	}
             }
             Item temp = new Item(pName,price,bName,eName);
+           
             list.add(temp);
         }
         }catch(PSQLException e) {
@@ -51,6 +52,8 @@ public class SQL {
 		}
         return list;
     }
+	
+	
 	public static ArrayList<Location> locationQuery(Statement statement, String sql) throws SQLException {
 		ArrayList<Location> location = new ArrayList<>();
 		ResultSet resultSet = statement.executeQuery(sql);
@@ -105,22 +108,41 @@ public class SQL {
 
 	public static ArrayList<Item> SortByPrice(Statement statement,String ItemName, String brand) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		if(brand.equals("all")) {
-			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price;");
+		if(ItemName ==null) {
+			if(brand.equals("all")) {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price asc;");
+			}else {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"','%') order by price asc;");
+			}
+			return sorted;
+			
 		}else {
-			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price;");
+			if(brand.equals("all")) {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price asc;");
+			}else {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price asc;");
+			}
+			return sorted;
 		}
-		
-		return sorted;
 	}
 	public static ArrayList<Item> SortByPriceDesc(Statement statement,String ItemName, String brand) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		if(brand.equals("all")) {
-			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price desc;");
+		if(ItemName ==null) {
+			if(brand.equals("all")) {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price desc;");
+			}else {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"','%') order by price desc;");
+			}
+			return sorted;
+			
 		}else {
-			sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price desc;");
+			if(brand.equals("all")) {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price desc;");
+			}else {
+				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price desc;");
+			}
+			return sorted;
 		}
-		return sorted;
 	}
 		
 	

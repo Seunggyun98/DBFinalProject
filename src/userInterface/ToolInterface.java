@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import parser.Item;
 
 interface ToolInterface {
-	public ArrayList<Item> searchName(ArrayList<Item> list);
+	public String searchName(ArrayList<Item> list);
 	public ArrayList<Item> searchEvent(ArrayList<Item> list);
 	public String searchBrand();
 	public ArrayList<Item> searchClosest(ArrayList<Item> list);
@@ -15,7 +15,7 @@ interface ToolInterface {
 class ToolClass implements ToolInterface{
 
 	@Override
-	public ArrayList<Item> searchName(ArrayList<Item> list){
+	public String searchName(ArrayList<Item> list){
 		return null;
 	}
 
