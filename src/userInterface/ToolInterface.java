@@ -6,7 +6,7 @@ import parser.Item;
 
 interface ToolInterface {
 	public String searchName(ArrayList<Item> list);
-	public ArrayList<Item> searchEvent(ArrayList<Item> list);
+	public ArrayList<Item> searchEvent(String ItemName,String brand);
 	public String searchBrand();
 	public ArrayList<Item> searchClosest(ArrayList<Item> list);
 	public ArrayList<Item> sortPrice(ArrayList<Item> list);
@@ -20,7 +20,7 @@ class ToolClass implements ToolInterface{
 	}
 
 	@Override
-	public ArrayList<Item> searchEvent(ArrayList<Item> list) {
+	public ArrayList<Item> searchEvent(String ItemName,String brand) {
 		return null;
 	}
 

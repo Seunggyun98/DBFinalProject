@@ -106,7 +106,7 @@ public class SQL {
         return location;
     }	
 
-	public static ArrayList<Item> SortByPrice(Statement statement,String ItemName, String brand) throws SQLException{
+	public static ArrayList<Item> SortByPrice(Statement statement,String query) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
 		if(ItemName ==null) {
 			if(brand.equals("all")) {
@@ -125,7 +125,7 @@ public class SQL {
 			return sorted;
 		}
 	}
-	public static ArrayList<Item> SortByPriceDesc(Statement statement,String ItemName, String brand) throws SQLException{
+	public static ArrayList<Item> SortByPriceDesc(Statement statement,String query) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
 		if(ItemName ==null) {
 			if(brand.equals("all")) {

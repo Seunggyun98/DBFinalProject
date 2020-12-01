@@ -104,15 +104,18 @@ public class Menu{
 			 */
 		System.out.println("검색 필터를 설정해주세요.");
 		System.out.println("1. 기본 정렬 2. 가격 오름차순 3. 가격 내림차순 4. 행사별");
+		
+		String query = "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"', '%');";
 		int filter=in.nextInt();
 			switch(filter) {
 			case 1:
+				Menu.found = SQL.query(statement,query);
 				break;
 			case 2:
-				list = SQL.SortByPrice(statement, null, brand);
+				list = SQL.SortByPrice(statement, query);
 				break;
 			case 3:
-				list = SQL.SortByPriceDesc(statement, null, brand);
+				list = SQL.SortByPriceDesc(statement, query);
 				break;
 			case 4:
 				/*System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
@@ -123,7 +126,7 @@ public class Menu{
 				//list = SQL.query(statement, "Select pID, bName, pName, price, eName From  ");
 				 * */
 				
-				list = function.searchEvent(list);
+				list = function.searchEvent("all","all");
 				break;
 			}
 			
@@ -181,22 +184,28 @@ public class Menu{
 		//20개씩 보여주기, 1~maxPage까지 선택으로 리스트 갱신, 0입력시 메뉴로
 	
 		String brand= function.searchBrand();
+		System.out.println("-----------------------------"+brand);
 		ArrayList<Item> found = new ArrayList<>();
 		found = Menu.found;
 		System.out.println("검색 필터를 설정해주세요.");
 		System.out.println("1.기본 정렬 \t 2.가격 오름차순 \t 3.가격 내림차순 \t 4.행사별 \t5.주변 편의점");
+		
+		String query = "Select pID, bName, pName, price, eName From "+ ItemName+"View Where bName like concat('%','"+brand+"', '%');";
 		int filter=in.nextInt();
 			switch(filter) {
 			case 1:
+				
+				System.out.println(ItemName+brand);
+				found = SQL.query(statement,query);
 				break;
 			case 2:
-				found = SQL.SortByPrice(Menu.statement, ItemName, brand);
+				found = SQL.SortByPrice(Menu.statement, query);
 				break;
 			case 3:
-				found = SQL.SortByPriceDesc(Menu.statement, ItemName, brand);
+				found = SQL.SortByPriceDesc(Menu.statement, query);
 				break;
 			case 4:
-				found = function.searchEvent(Menu.found);
+				found = function.searchEvent(ItemName,brand);
 				break;
 			case 5:
 				System.out.println("몇 m 반경 내에 있는 편의점을 확인하시겠습니까? : ");
@@ -214,7 +223,7 @@ public class Menu{
 		
 		
 		
-		if(list.size()!=0) {
+		if(found.size()!=0) {
 			in = new Scanner(System.in);
 			System.out.println("총 상품 개수 :"+found.size());
 
@@ -249,6 +258,9 @@ public class Menu{
 				try {
 					next = in.nextInt();
 					if(next == 0 ) {
+						//뷰 드랍
+						statement.executeUpdate("Drop view "+ItemName+"View Cascade;");
+						
 						System.out.println("메뉴화면으로 돌아갑니다.");
 						menu();
 					}else if(next > ((found.size()/20)+1)) {
@@ -320,7 +332,10 @@ class Tool extends ToolClass{
 				
 			}
 		}while(ItemName.length()<2);
-		
+		 
+		 
+		 Menu.statement.executeUpdate("create view " +ItemName+"View as Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"','%');");
+		 
 		 Menu.found =SQL.query(Menu.statement,
 			"Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%');");
 		
@@ -332,7 +347,13 @@ class Tool extends ToolClass{
 	}
 
 	@Override
-	public ArrayList<Item> searchEvent(ArrayList<Item> list) {
+	public ArrayList<Item> searchEvent(String ItemName,String brand) {
+		System.out.println(brand);
+		if(ItemName.equals("all")) {
+			ItemName="Product";
+		}else {
+			ItemName=ItemName+"View";
+		}
 		while(true) {
 			try{
 				int toFind;
@@ -340,7 +361,7 @@ class Tool extends ToolClass{
 				String table;
 				/*if(viewName.equals("all")) table = "Product";
 				else table = viewName;*/
-			
+				String query="";
 				System.out.println("행사로 검색합니다. 찾고싶은 행사를 선택해주세요.");
 				System.out.println("1. 1+1\t2. 2+1\t3. 3+1");
 				toFind = in.nextInt();
@@ -348,29 +369,36 @@ class Tool extends ToolClass{
 				switch(toFind) {
 				case 1:
 					System.out.println("1+1행사 상품을 검색합니다.");
-					Menu.found =SQL.query(Menu.statement,
-						"Select pID, bName, pName, price, eName From Product Where eName like concat('%','1+1','%')");
-					
-					return Menu.found;
+					query = "Select pID, bName, pName, price, eName From "+ ItemName+" Where eName like concat('%','1+1','%')";
+					break;
 				
 				case 2:
 					System.out.println("2+1행사 상품을 검색합니다.");
-					Menu.found =SQL.query(Menu.statement,
-						"Select pID, bName, pName, price, eName From Product Where eName like concat('%','2+1','%')");
 					
-					return Menu.found;
+					query ="Select pID, bName, pName, price, eName From "+ ItemName+" Where eName like concat('%','2+1','%')";
+					break;
 				case 3:
 					System.out.println("3+1행사 상품을 검색합니다.");
 					
-					Menu.found =SQL.query(Menu.statement,
-						"Select pID, bName, pName, price, eName From Product Where eName like concat('%','3+1','%')");
 					
-					return Menu.found;
+					query = "Select pID, bName, pName, price, eName From "+ ItemName+" Where eName like concat('%','3+1','%')";
+					break;
 				default:
 				
 					System.out.println("다시 선택해주세요.");
 					break;
-				}
+				}	
+				
+				
+				
+				if(brand.equals("all")) {
+						Menu.found = SQL.query(Menu.statement, query);
+					}else {
+						Menu.found =SQL.query(Menu.statement,
+								query+ " and bName = "+brand);
+							
+					}
+				return Menu.found;
 			}catch(InputMismatchException e) {
 				
 				System.out.println("다시 선택해주세요.");
