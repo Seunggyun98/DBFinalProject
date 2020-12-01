@@ -108,41 +108,15 @@ public class SQL {
 
 	public static ArrayList<Item> SortByPrice(Statement statement,String query) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		if(ItemName ==null) {
-			if(brand.equals("all")) {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price asc;");
-			}else {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"','%') order by price asc;");
-			}
-			return sorted;
-			
-		}else {
-			if(brand.equals("all")) {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price asc;");
-			}else {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price asc;");
-			}
-			return sorted;
-		}
+		
+		sorted = query(statement, query+" order by price asc");
+		return sorted;
 	}
 	public static ArrayList<Item> SortByPriceDesc(Statement statement,String query) throws SQLException{
 		ArrayList<Item> sorted = new ArrayList<>();
-		if(ItemName ==null) {
-			if(brand.equals("all")) {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product order by price desc;");
-			}else {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"','%') order by price desc;");
-			}
-			return sorted;
-			
-		}else {
-			if(brand.equals("all")) {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') order by price desc;");
-			}else {
-				sorted = query(statement, "Select pID, bName, pName, price, eName From Product Where pName like concat('%','"+ItemName+"', '%') and bName like concat('%','"+brand+"','%') order by price desc;");
-			}
-			return sorted;
-		}
+		sorted = query(statement, query+" order by price desc");
+		return sorted;
+		
 	}
 		
 	

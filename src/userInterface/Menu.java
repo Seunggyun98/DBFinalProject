@@ -102,10 +102,15 @@ public class Menu{
 			 * list = SQL.query(주변 편의점 테이블 natural join ItemView 테이블);
 			 *
 			 */
+		String query;
 		System.out.println("검색 필터를 설정해주세요.");
 		System.out.println("1. 기본 정렬 2. 가격 오름차순 3. 가격 내림차순 4. 행사별");
+		if(brand.equals("all")) {
+			query="Select pID, bName, pName, price, eName From Product Where;";
+		}else {
+			query="Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"', '%');";
+		}
 		
-		String query = "Select pID, bName, pName, price, eName From Product Where bName like concat('%','"+brand+"', '%');";
 		int filter=in.nextInt();
 			switch(filter) {
 			case 1:
@@ -190,7 +195,14 @@ public class Menu{
 		System.out.println("검색 필터를 설정해주세요.");
 		System.out.println("1.기본 정렬 \t 2.가격 오름차순 \t 3.가격 내림차순 \t 4.행사별 \t5.주변 편의점");
 		
-		String query = "Select pID, bName, pName, price, eName From "+ ItemName+"View Where bName like concat('%','"+brand+"', '%');";
+		
+		String query;
+		if(brand.equals("all")) {
+			query="Select pID, bName, pName, price, eName From "+ ItemName+"View Where;";
+		}else {
+			query="Select pID, bName, pName, price, eName From From "+ ItemName+"View  Where bName like concat('%','"+brand+"', '%');";
+		}
+
 		int filter=in.nextInt();
 			switch(filter) {
 			case 1:
@@ -374,7 +386,6 @@ class Tool extends ToolClass{
 				
 				case 2:
 					System.out.println("2+1행사 상품을 검색합니다.");
-					
 					query ="Select pID, bName, pName, price, eName From "+ ItemName+" Where eName like concat('%','2+1','%')";
 					break;
 				case 3:
