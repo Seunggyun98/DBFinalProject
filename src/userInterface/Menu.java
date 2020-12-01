@@ -1,7 +1,6 @@
 package userInterface;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -76,20 +75,35 @@ public class Menu{
 			menu();
 		}
 	}
-	private static void loadFromCSV() throws FileNotFoundException {
-		
-		Path path = Paths.get("Type_All.csv");
-		File file = new File(path.toUri());
-		Scanner sc = new Scanner(file);
-		sc.nextLine();
-		while(sc.hasNextLine()) {
-			String temp = sc.nextLine();
-			String[] splited = temp.split(",");
-			
+	
+	private static void loadFromCSV() throws IOException {
+
+		File csv = new File("Type_All.csv");
+		BufferedReader br = new BufferedReader(new FileReader(csv));
+		String line = "";
+		int row =0 ,i;
+		br.readLine();
+		while ((line = br.readLine()) != null){
+			String[] splited = line.split(",", -1);
+			for(int j = 0; j<splited.length;j++)
+			{
+				if(splited[j].contains("'")){
+					String[] temp= splited[j].split("'",-1);
+					for (int k = 0; k<temp.length;k++)
+					{
+						if(k == 0)
+						{
+							splited[j] = temp[k];
+						}
+						else
+						{
+							splited[j]+= temp[k];
+						}
+					}
+				}
+			}
 			list.add(new Item(splited[0],Integer.valueOf(splited[1]),splited[2],splited[3]));
 		}
-		System.out.println("Database load complete!!");
-		sc.close();
 	}
 	
 	private static void showEntryList() throws FileNotFoundException, SQLException {
